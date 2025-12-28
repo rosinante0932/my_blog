@@ -1,0 +1,112 @@
+---
+sidebar_position: 2
+id: android-2
+title: CheckBox
+---
+
+## 自定义 CheckBox
+
+### 主页面
+
+```Java
+package com.example.testjava1;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class CheckBoxActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_check_box);
+
+        MyCheckView checkTextView = findViewById(R.id.check);
+
+        checkTextView.setOnClickListener(v->{
+            checkTextView.setSTATUS(!checkTextView.getSTATUS());
+        });
+    }
+}
+```
+
+### 主页主页面的 xml 布局文件面
+
+```XML
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".CheckBoxActivity">
+
+    <com.example.testjava1.MyCheckView
+        android:layout_width="wrap_content"
+        android:text="请勾选"
+        android:id="@+id/check"
+        android:textSize="30dp"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+```
+
+### 自定义的 checkbox 页面
+
+```Java
+package com.example.testjava1;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
+public class MyCheckView extends androidx.appcompat.widget.AppCompatTextView {
+
+    private static final String TAG = "MyCheckView";
+
+    private final Drawable unCheck;
+
+    private final Drawable check;
+
+    private Boolean STATUS = false;
+
+    public MyCheckView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+
+        check = ContextCompat.getDrawable(context, R.mipmap.check);
+
+        unCheck = ContextCompat.getDrawable(context, R.mipmap.uncheck);
+
+        setCompoundDrawablesWithIntrinsicBounds(unCheck, null, null, null);
+    }
+
+    public void setSTATUS(Boolean STATUS) {
+        this.STATUS = STATUS;
+
+        Log.i(TAG, "setSTATUS: 设置状态");
+
+        if (STATUS) {
+            setCompoundDrawablesWithIntrinsicBounds(check, null, null, null);
+
+            return;
+        }
+
+        setCompoundDrawablesWithIntrinsicBounds(unCheck, null, null, null);
+    }
+
+    public Boolean getSTATUS() {
+        return STATUS;
+    }
+}
+
+
+```
