@@ -33,7 +33,7 @@ public class CheckBoxActivity extends AppCompatActivity {
 }
 ```
 
-### 主页主页面的 xml 布局文件面
+### 主页面的 xml 布局文件面
 
 ```XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -109,4 +109,146 @@ public class MyCheckView extends androidx.appcompat.widget.AppCompatTextView {
 }
 
 
+```
+
+### 官方的 checkbox 页面的布局文件
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".MyCheckboxView">
+
+    <CheckBox
+        android:id="@+id/my_checkbox_view"
+        android:checked="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="勾选，表示同意用户协议" />
+</LinearLayout>
+```
+
+### 官方的 checkbox 页面 Click 的写法
+
+```Java
+package com.example.testjava1;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MyCheckboxView extends AppCompatActivity {
+    private static final String TAG = "MyCheckboxView";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_check_box_main);
+
+        CheckBox checkBox = findViewById(R.id.my_checkbox_view);
+
+       checkBox.setOnClickListener(v -> {
+           boolean isChecked = checkBox.isChecked();
+           Toast toast = Toast.makeText(MyCheckboxView.this, "当前状态：" + isChecked, Toast.LENGTH_SHORT);
+           Log.d("CheckBox", "当前状态：" + isChecked);
+           toast.show();
+           if (isChecked) {
+               checkBox.setChecked(true);
+               return;
+           }
+           checkBox.setChecked(false);
+
+       });
+    }
+}
+```
+
+
+### 官方的 checkbox 页面 监听 的写法1
+
+```Java
+package com.example.testjava1;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MyCheckboxView extends AppCompatActivity {
+    private static final String TAG = "MyCheckboxView";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_check_box_main);
+
+        CheckBox checkBox = findViewById(R.id.my_checkbox_view);
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                CheckBox btnView1 = (CheckBox) buttonView;
+                btnView1.isChecked();
+                Toast toast = Toast.makeText(MyCheckboxView.this, "当前状态：" + isChecked, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
+}
+```
+
+### 官方的 checkbox 页面 监听 的写法2
+
+```Java
+package com.example.testjava1;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MyCheckboxView extends AppCompatActivity {
+    private static final String TAG = "MyCheckboxView";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_check_box_main);
+
+        CheckBox checkBox = findViewById(R.id.my_checkbox_view);
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+                CheckBox btnView1 = (CheckBox) buttonView;
+                boolean isChecked1 = btnView1.isChecked();
+                Toast toast = Toast.makeText(MyCheckboxView.this, "当前状态：" + isChecked1, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
+}
 ```
