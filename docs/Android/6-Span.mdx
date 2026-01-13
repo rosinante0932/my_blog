@@ -105,6 +105,10 @@ public class SpanActivity extends AppCompatActivity {
                 // 竖线
                 stringBuilder.setSpan(new QuoteSpan(Color.BLUE), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 textView.setText(stringBuilder);
+                // HTML
+                String htmlString = "<font color=\"#ff0000\">我是绿色的</font>";
+                Spanned spanned = Html.fromHtml(htmlString, Html.FROM_HTML_MODE_COMPACT);
+                textView.setText(spanned);
             }
         });
     }
