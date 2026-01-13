@@ -1,0 +1,188 @@
+---
+sidebar_position: 6
+id: android-6
+title: Span
+---
+
+## Span的类型与用法
+
+`Span` 是一个功能强大的标记对象，可以帮助我们在字符串或者段落之间设置文本的样式，
+通过 `Span`，可以改变文本的颜色、点击、缩放等等。使用 `Span`，需要先用下面 3 个之一的类来包装字符串：
+
+
+类 | 可变文本 | 可变标记-  |  数据结构  
+| ----------- | ----------- |----------- |----------- |
+SpannedString | 不支持 | 不支持 | 线性数组 
+SpannableString | 不支持 | 是 | 线性数组
+SpannableStringBuilder | 是 | 是 | 区间树
+
+**如何选择**
+
+三个类都扩展了 `Spanned` 接口。`SpannableString` 和 `SpannableStringBuilder` 还会扩展 `Spannable` 接口：
+
+1. 不准备在创建后修改文本或标记，使用 `SpannedString`
+
+2. 需要将少量 `span`（10 个以内）附加到单个文本对象，并且文本本身为只读，使用 `SpannableString`
+
+3. 需要在创建后修改文本，并且需要将 `span` 附加到文本，使用 `SpannableStringBuilder` 
+
+4. 需要将大量 `span`（10 个以上）附加到文本对象（无论文本本身是否为只读），使用 `SpannableStringBuilder`
+
+
+### setSpan 中的第四个参数（扩展）
+
+**第四个参数可以用来指定第 2、3 个参数的作用范围，一般会有下面几个值：**
+
+1. Spanned.SPAN_EXCLUSIVE_EXCLUSIVE：前后都不包括
+
+2. Spanned.SPAN_EXCLUSIVE_INCLUSIVE：前面不包括，后面包括
+
+3. Spanned.SPAN_INCLUSIVE_EXCLUSIVE：前面包括，后面不包括
+
+4. Spanned.SPAN_INCLUSIVE_INCLUSIVE：前后都包括
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SpanActivity">
+
+    <TextView
+        android:id="@+id/tv_span"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>
+```
+
+```Java
+package com.example.testjava1;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class SpanActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_span);
+
+        TextView textView = findViewById(R.id.tv_span);
+
+        String txt = "你好世界";
+        SpannableStringBuilder stringBuilder = new SpannableStringBuilder(txt);
+
+        stringBuilder.setSpan(new ForegroundColorSpan(Color.RED), 2, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textView.setText(stringBuilder);
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stringBuilder.insert(4, " HELLO WORLD");
+                stringBuilder.setSpan(new ForegroundColorSpan(Color.GREEN), 6, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                // 放大
+                stringBuilder.setSpan(new RelativeSizeSpan(1.5f), 5, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                // 竖线
+                stringBuilder.setSpan(new QuoteSpan(Color.BLUE), 0, 10, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                textView.setText(stringBuilder);
+            }
+        });
+    }
+}
+```
+
+
+### 常见的 Span 样式
+
+- BackgroundColorSpan：给部分文字设置背景颜色。
+
+- ForegroundColorSpan：给部分文字设置前景色（文本颜色）。
+
+- UnderlineSpan：给部分文字添加下划线。
+
+- StrikethroughSpan：给部分文字添加删除线（中划线）。
+
+- TypefaceSpan：设置文本的字体。
+
+- TextAppearanceSpan：使用 style 来定义文本样式，包括字体、大小、样式和颜色。
+
+- AbsoluteSizeSpan：设置文本的绝对大小（字体大小）。
+
+- RelativeSizeSpan：设置文本的相对大小（相对于默认字体大小）。
+
+- StyleSpan：设置文本的字体样式，如粗体、斜体等。
+
+- ClickableSpan：使文本部分可点击，并可以定义点击事件。
+
+- URLSpan：将文本部分设置为超链接，点击时打开 URL。
+
+- MaskFilterSpan：为文本添加装饰效果，如模糊（BlurMaskFilter）或浮雕（EmbossMaskFilter）。
+
+- ImageSpan：在文本中插入图片。
+
+- ScaleXSpan：基于 X 轴缩放文本。
+
+- SubscriptSpan：设置下标文本（数学公式中常用）。
+
+- SuperscriptSpan：设置上标文本（数学公式中常用）。
+
+- AlignmentSpan.Standard：设置文本的对齐方式，如左对齐、右对齐、居中对齐等。
+
+
+🎨 样式类
+
+- ForegroundColorSpan：文字颜色
+
+- BackgroundColorSpan：背景色
+
+- StyleSpan：粗体 / 斜体
+
+- TypefaceSpan：字体
+
+- UnderlineSpan：下划线
+
+- StrikethroughSpan：删除线
+
+📏 大小 / 形态
+
+- AbsoluteSizeSpan：绝对字体大小
+
+- RelativeSizeSpan：相对大小
+
+- ScaleXSpan：X 轴缩放
+
+- SubscriptSpan：下标
+
+- SuperscriptSpan：上标
+
+🧭 行为 / 功能
+
+- ClickableSpan：可点击文本
+
+- URLSpan：超链接
+
+- ImageSpan：插入图片
+
+- AlignmentSpan.Standard：对齐方式
+
+- MaskFilterSpan：模糊 / 浮雕效果
