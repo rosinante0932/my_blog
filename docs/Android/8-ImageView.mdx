@@ -64,3 +64,97 @@ public class ImageActivity extends AppCompatActivity {
     }
 }
 ```
+
+## bitmap
+
+```Java
+package com.example.testjava1;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import java.io.File;
+
+public class ImageActivity extends AppCompatActivity {
+    private static final String TAG = "ImageActivity";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_image);
+
+        ImageView ivTest = findViewById(R.id.img);
+
+        Drawable drawable = ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_launcher_background
+        );
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.check);
+
+        ivTest.setImageBitmap(bitmap);
+
+        Log.e(TAG, "onCreate: " + ivTest);
+    }
+}
+```
+
+:::caution 注意
+资源必须是图片格式
+:::
+
+```Java
+package com.example.testjava1;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import java.io.File;
+
+public class ImageActivity extends AppCompatActivity {
+    private static final String TAG = "ImageActivity";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_image);
+
+        ImageView ivTest = findViewById(R.id.img);
+
+        Drawable drawable = ContextCompat.getDrawable(
+                this,
+                R.drawable.ic_launcher_background
+        );
+
+        Bitmap bitmap = Bitmap.createBitmap(
+                drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888
+        );
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        ivTest.setImageBitmap(bitmap);
+
+        Log.e(TAG, "onCreate: " + ivTest);
+    }
+}
+```
