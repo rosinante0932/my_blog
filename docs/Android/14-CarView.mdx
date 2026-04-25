@@ -1,0 +1,428 @@
+---
+sidebar_position: 14
+id: android-14
+title: CardView
+---
+
+# 卡片式布局：CardView
+
+## 1. CardView 是什么
+
+`CardView` 是 Android 提供的一种**卡片式容器布局**。
+
+它的作用是：
+
+> 给内容添加卡片背景、圆角、阴影，让界面看起来像一张独立的卡片。
+
+常见场景：
+
+* 商品卡片
+* 用户信息卡片
+* 新闻列表卡片
+* 设置项卡片
+* 首页功能入口
+* RecyclerView 列表 item
+
+---
+
+## 2. CardView 的本质
+
+`CardView` 本质上是一个 **ViewGroup 容器**。
+
+也就是说，它可以包裹其他 View：
+
+```xml
+<androidx.cardview.widget.CardView>
+    <TextView />
+</androidx.cardview.widget.CardView>
+```
+
+这和 `TextView` 不一样。
+
+`TextView` 只能显示文本，不能嵌套子 View。
+
+---
+
+## 3. 使用前需要添加依赖
+
+如果项目没有引入 `cardview`，需要在 `build.gradle` 中添加：
+
+```gradle
+dependencies {
+    implementation "androidx.cardview:cardview:1.0.0"
+}
+```
+
+如果你使用的是 Material Design，也可以优先考虑：
+
+```xml
+com.google.android.material.card.MaterialCardView
+```
+
+---
+
+# 4. 基础示例
+
+```xml
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardUseCompatPadding="true">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="这是一个 CardView 卡片"
+        android:textSize="18sp" />
+
+</androidx.cardview.widget.CardView>
+```
+
+效果：
+
+```text
+一个带圆角、阴影、内边距的卡片容器
+```
+
+---
+
+# 5. 常用属性说明
+
+| 属性                         | 作用        |
+| -------------------------- | --------- |
+| `app:cardCornerRadius`     | 设置卡片圆角    |
+| `app:cardElevation`        | 设置卡片阴影高度  |
+| `app:cardBackgroundColor`  | 设置卡片背景色   |
+| `app:cardUseCompatPadding` | 兼容旧版本阴影边距 |
+| `app:contentPadding`       | 设置卡片内容内边距 |
+| `app:contentPaddingLeft`   | 设置左侧内容内边距 |
+| `app:contentPaddingRight`  | 设置右侧内容内边距 |
+| `app:contentPaddingTop`    | 设置顶部内容内边距 |
+| `app:contentPaddingBottom` | 设置底部内容内边距 |
+
+---
+
+# 6. 圆角属性
+
+```xml
+app:cardCornerRadius="12dp"
+```
+
+表示：
+
+> 卡片四个角都是 12dp 圆角。
+
+示例：
+
+```xml
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp">
+
+    <!-- 内容 -->
+
+</androidx.cardview.widget.CardView>
+```
+
+---
+
+# 7. 阴影属性
+
+```xml
+app:cardElevation="6dp"
+```
+
+表示：
+
+> 卡片有 6dp 的阴影高度。
+
+`cardElevation` 越大，视觉上越像浮起来。
+
+但不要滥用，常见值：
+
+```text
+2dp ~ 8dp
+```
+
+过大的阴影会显得很脏。
+
+---
+
+# 8. 内容内边距
+
+可以直接给子 View 设置：
+
+```xml
+android:padding="16dp"
+```
+
+也可以给 CardView 设置：
+
+```xml
+app:contentPadding="16dp"
+```
+
+示例：
+
+```xml
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:contentPadding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="卡片内容" />
+
+</androidx.cardview.widget.CardView>
+```
+
+---
+
+# 9. CardView 中嵌套复杂布局
+
+`CardView` 通常不会直接放很多控件，而是内部再放一个布局容器。
+
+例如：
+
+```xml
+<androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_launcher_foreground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="用户名"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/iv_avatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_avatar"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="这是用户简介内容"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/tv_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            android:layout_marginTop="8dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+```
+
+结构是：
+
+```text
+CardView
+└── ConstraintLayout
+    ├── ImageView
+    ├── TextView
+    └── TextView
+```
+
+这是比较标准的写法。
+
+---
+
+# 10. CardView 和普通布局的区别
+
+| 对比项          | 普通布局 | CardView |
+| ------------ | ---- | -------- |
+| 是否有圆角        | 默认没有 | 支持       |
+| 是否有阴影        | 默认没有 | 支持       |
+| 是否是容器        | 是    | 是        |
+| 是否适合卡片 UI    | 一般   | 适合       |
+| 是否常用于列表 item | 可以   | 常用       |
+
+---
+
+# 11. CardView 和 ConstraintLayout 的关系
+
+这两个不是同一类东西。
+
+| 类型                 | 作用              |
+| ------------------ | --------------- |
+| `CardView`         | 负责卡片外观：圆角、阴影、背景 |
+| `ConstraintLayout` | 负责内部内容布局        |
+
+所以常见组合是：
+
+```xml
+<CardView>
+    <ConstraintLayout>
+        <!-- 具体内容 -->
+    </ConstraintLayout>
+</CardView>
+```
+
+一句话：
+
+> CardView 管外观，ConstraintLayout 管位置。
+
+---
+
+# 12. CardView 和 MaterialCardView 的区别
+
+现在如果项目使用 Material Design，更推荐：
+
+```xml
+<com.google.android.material.card.MaterialCardView>
+```
+
+它比普通 `CardView` 更强：
+
+| 能力           | CardView | MaterialCardView |
+| ------------ | -------- | ---------------- |
+| 圆角           | 支持       | 支持               |
+| 阴影           | 支持       | 支持               |
+| 边框 stroke    | 不方便      | 支持               |
+| 点击水波纹        | 不方便      | 支持               |
+| checkable 状态 | 不支持      | 支持               |
+| Material 风格  | 一般       | 更完整              |
+
+示例：
+
+```xml
+<com.google.android.material.card.MaterialCardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#DDDDDD">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="MaterialCardView 卡片"
+        android:textSize="18sp" />
+
+</com.google.android.material.card.MaterialCardView>
+```
+
+---
+
+# 13. 使用注意事项
+
+## 13.1 CardView 里面最好只放一个根布局
+
+不推荐：
+
+```xml
+<CardView>
+    <TextView />
+    <TextView />
+    <Button />
+</CardView>
+```
+
+推荐：
+
+```xml
+<CardView>
+    <ConstraintLayout>
+        <TextView />
+        <TextView />
+        <Button />
+    </ConstraintLayout>
+</CardView>
+```
+
+原因：
+
+> CardView 只是卡片容器，不负责复杂子 View 排列。复杂布局交给 ConstraintLayout 更清晰。
+
+---
+
+## 13.2 阴影可能被裁剪
+
+如果阴影显示不完整，可以加：
+
+```xml
+app:cardUseCompatPadding="true"
+```
+
+或者给外层加 margin：
+
+```xml
+android:layout_margin="16dp"
+```
+
+---
+
+## 13.3 文字大小用 `sp`
+
+错误：
+
+```xml
+android:textSize="20dp"
+```
+
+正确：
+
+```xml
+android:textSize="20sp"
+```
+
+`dp` 用于尺寸，`sp` 用于文字。
+
+---
+
+# 14. 总结
+
+`CardView` 是 Android 中用于实现卡片式 UI 的容器组件。
+
+它主要负责：
+
+```text
+圆角 + 阴影 + 背景
+```
+
+不负责复杂布局逻辑。
+
+实际开发中常见组合是：
+
+```text
+CardView / MaterialCardView
+└── ConstraintLayout
+    └── 页面内容
+```
+
+一句话总结：
+
+> CardView 负责卡片外观，ConstraintLayout 负责卡片内部布局。
+
+现在新项目如果已经使用 Material Design，优先考虑 `MaterialCardView`。

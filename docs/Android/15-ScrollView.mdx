@@ -1,0 +1,543 @@
+---
+sidebar_position: 15
+id: android-15
+title: ScrollView
+---
+
+# 滚动布局：ScrollView
+
+## 1. ScrollView 是什么
+
+`ScrollView` 是 Android 提供的**垂直滚动容器**。
+
+它的作用是：
+
+> 当页面内容高度超过屏幕高度时，让内容可以上下滚动。
+
+常见场景：
+
+* 登录页内容过长
+* 表单页面
+* 设置页面
+* 详情页
+* 协议 / 说明页面
+
+---
+
+## 2. ScrollView 的核心特点
+
+`ScrollView` 本质上是一个容器，但它有一个非常重要的限制：
+
+> `ScrollView` 只能有一个直接子 View。
+
+错误写法：
+
+```xml
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView />
+    <TextView />
+    <Button />
+
+</ScrollView>
+```
+
+正确写法：
+
+```xml
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout>
+        <TextView />
+        <TextView />
+        <Button />
+    </LinearLayout>
+
+</ScrollView>
+```
+
+原因：
+
+> ScrollView 只负责滚动，不负责排列多个子控件。
+
+多个控件要先放进一个布局容器里，例如：
+
+* `LinearLayout`
+* `ConstraintLayout`
+* `FrameLayout`
+
+---
+
+# 3. 基础示例
+
+```xml
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="标题"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="这里是很长的内容..."
+            android:textSize="16sp" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="提交" />
+
+    </LinearLayout>
+
+</ScrollView>
+```
+
+---
+
+## 4. `fillViewport` 的作用
+
+```xml
+android:fillViewport="true"
+```
+
+含义：
+
+> 当内容高度不足一屏时，让 ScrollView 的子 View 至少填满整个屏幕高度。
+
+这个属性非常常用。
+
+---
+
+## 5. 不使用 `fillViewport` 的问题
+
+如果内容很少：
+
+```xml
+<ScrollView>
+    <LinearLayout android:layout_height="wrap_content" />
+</ScrollView>
+```
+
+子布局高度只会包裹内容。
+
+如果你想让按钮贴到底部，或者页面整体撑满屏幕，就很难处理。
+
+---
+
+## 6. 使用 `fillViewport` 后
+
+```xml
+<ScrollView
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_height="wrap_content" />
+</ScrollView>
+```
+
+效果是：
+
+```text
+内容少时：子布局至少等于屏幕高度
+内容多时：页面正常滚动
+```
+
+---
+
+# 7. ScrollView + ConstraintLayout 示例
+
+如果页面结构比较复杂，可以使用：
+
+```text
+ScrollView
+└── ConstraintLayout
+    ├── TextView
+    ├── EditText
+    └── Button
+```
+
+示例：
+
+```xml
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="match_parent"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="登录"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <EditText
+            android:id="@+id/et_username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="请输入用户名"
+            android:inputType="textPersonName"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp" />
+
+        <EditText
+            android:id="@+id/et_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="请输入密码"
+            android:inputType="textPassword"
+            app:layout_constraintTop_toBottomOf="@id/et_username"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp" />
+
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="登录"
+            app:layout_constraintTop_toBottomOf="@id/et_password"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="24dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
+```
+
+---
+
+# 8. 横向滚动：HorizontalScrollView
+
+`ScrollView` 只支持垂直滚动。
+
+如果需要横向滚动，应使用：
+
+```xml
+<HorizontalScrollView>
+    <!-- 子 View -->
+</HorizontalScrollView>
+```
+
+示例：
+
+```xml
+<HorizontalScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="菜单1" />
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="菜单2" />
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:gravity="center"
+            android:text="菜单3" />
+
+    </LinearLayout>
+
+</HorizontalScrollView>
+```
+
+---
+
+# 9. ScrollView 和 RecyclerView 的区别
+
+| 对比项       | ScrollView | RecyclerView   |
+| --------- | ---------- | -------------- |
+| 适合内容      | 少量固定内容     | 大量列表数据         |
+| 是否复用 item | 不复用        | 复用             |
+| 性能        | 内容多时较差     | 适合大量数据         |
+| 常见场景      | 表单、详情页、设置页 | 商品列表、消息列表、订单列表 |
+| 子 View 数量 | 少量         | 大量             |
+
+---
+
+## 选择建议
+
+### 使用 ScrollView
+
+适合：
+
+```text
+固定页面内容
+表单
+详情说明
+内容数量不多
+```
+
+### 使用 RecyclerView
+
+适合：
+
+```text
+列表数据
+动态数据
+几十条、几百条内容
+需要复用 item
+```
+
+不要用 `ScrollView + 很多 item` 模拟列表。
+
+这种写法性能差，也不好维护。
+
+---
+
+# 10. ScrollView 嵌套 RecyclerView 的问题
+
+不推荐这样写：
+
+```xml
+<ScrollView>
+    <RecyclerView />
+</ScrollView>
+```
+
+容易出现：
+
+* 滚动冲突
+* RecyclerView 高度计算异常
+* item 复用失效
+* 页面卡顿
+
+如果页面中有列表，优先考虑：
+
+```text
+整个页面使用 RecyclerView
+不同区域用不同 itemType
+```
+
+或者使用：
+
+```text
+NestedScrollView + RecyclerView
+```
+
+但也要谨慎处理。
+
+---
+
+# 11. NestedScrollView
+
+`NestedScrollView` 是支持嵌套滚动机制的滚动容器。
+
+依赖：
+
+```gradle
+implementation "androidx.core:core-ktx:版本号"
+```
+
+常见写法：
+
+```xml
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 内容 -->
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
+```
+
+适合场景：
+
+* 与 CoordinatorLayout 配合
+* AppBarLayout 折叠头部
+* 复杂嵌套滚动页面
+
+普通页面优先用 `ScrollView` 就够了。
+
+---
+
+# 12. 常见错误
+
+## 12.1 ScrollView 直接放多个子 View
+
+错误：
+
+```xml
+<ScrollView>
+    <TextView />
+    <Button />
+</ScrollView>
+```
+
+正确：
+
+```xml
+<ScrollView>
+    <LinearLayout>
+        <TextView />
+        <Button />
+    </LinearLayout>
+</ScrollView>
+```
+
+---
+
+## 12.2 子布局高度写 `match_parent`
+
+不推荐：
+
+```xml
+<LinearLayout
+    android:layout_height="match_parent" />
+```
+
+推荐：
+
+```xml
+<LinearLayout
+    android:layout_height="wrap_content" />
+```
+
+如果希望内容不足一屏时撑满屏幕，用：
+
+```xml
+android:fillViewport="true"
+```
+
+---
+
+## 12.3 用 ScrollView 做大列表
+
+错误思路：
+
+```text
+ScrollView + 100 个 TextView
+```
+
+正确思路：
+
+```text
+RecyclerView
+```
+
+---
+
+## 12.4 忘记键盘遮挡问题
+
+表单页面中使用 ScrollView 时，如果键盘弹出遮挡输入框，可以在 `AndroidManifest.xml` 中配置：
+
+```xml
+<activity
+    android:name=".MainActivity"
+    android:windowSoftInputMode="adjustResize" />
+```
+
+这样键盘弹出时，页面可滚动区域会重新调整。
+
+---
+
+# 13. ScrollView 与 CSS 的类比
+
+ScrollView 可以类比为 CSS 中的：
+
+```css
+.container {
+  overflow-y: auto;
+}
+```
+
+HorizontalScrollView 类似：
+
+```css
+.container {
+  overflow-x: auto;
+}
+```
+
+但 Android 的 ScrollView 更严格：
+
+> 它只能有一个直接子 View。
+
+---
+
+# 14. 总结
+
+`ScrollView` 是 Android 中用于实现垂直滚动的基础容器。
+
+核心规则：
+
+```text
+ScrollView 只能有一个直接子 View。
+```
+
+常见结构：
+
+```text
+ScrollView
+└── LinearLayout / ConstraintLayout
+    ├── TextView
+    ├── EditText
+    └── Button
+```
+
+使用建议：
+
+* 少量固定内容：用 `ScrollView`
+* 大量列表数据：用 `RecyclerView`
+* 复杂嵌套滚动：考虑 `NestedScrollView`
+* 横向滚动：用 `HorizontalScrollView`
+
+一句话总结：
+
+> ScrollView 负责滚动，内部布局容器负责排列内容。

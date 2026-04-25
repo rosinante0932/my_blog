@@ -1,0 +1,491 @@
+---
+sidebar_position: 13
+id: android-13
+title: Barrier
+---
+# 约束布局屏障：Barrier
+
+## 1. Barrier 是什么
+
+`Barrier` 是 `ConstraintLayout` 提供的**辅助定位组件**。
+
+它本身：
+
+* 不显示在页面上
+* 不占实际 UI 空间
+* 不能直接展示内容
+* 只用于给其他 View 提供约束参考
+
+它的作用是：
+
+> 根据一组 View 的实际尺寸，动态生成一条边界线。
+
+---
+
+## 2. Barrier 解决什么问题
+
+假设有两个文本：
+
+```text
+姓名
+身份证号码
+```
+
+它们长度不一样。
+
+如果右侧输入框直接约束到“姓名”的右边：
+
+```xml
+app:layout_constraintStart_toEndOf="@id/tv_name"
+```
+
+那么当另一个标题更长时，输入框就可能对不齐。
+
+这时就需要 `Barrier`：
+
+```text
+姓名       |
+身份证号码 |
+           ↑
+       Barrier 动态取最长文本的右边界
+```
+
+然后右侧控件统一约束到这个 Barrier。
+
+---
+
+# 3. Barrier 的核心思想
+
+## 普通约束
+
+```text
+View A 约束到 View B
+```
+
+结果：
+
+> 只参考一个 View。
+
+---
+
+## Barrier 约束
+
+```text
+View A 约束到 Barrier
+Barrier 参考 View B、View C、View D
+```
+
+结果：
+
+> 自动参考多个 View 中最靠外的边界。
+
+---
+
+# 4. Barrier 的方向
+
+Barrier 通过：
+
+```xml
+app:barrierDirection="end"
+```
+
+决定屏障方向。
+
+| 方向       | 含义                        |
+| -------- | ------------------------- |
+| `start`  | 取所有参考 View 最左 / start 的边界 |
+| `end`    | 取所有参考 View 最右 / end 的边界   |
+| `top`    | 取所有参考 View 最上方边界          |
+| `bottom` | 取所有参考 View 最下方边界          |
+| `left`   | 取所有参考 View 左边界            |
+| `right`  | 取所有参考 View 右边界            |
+
+开发中更推荐使用：
+
+```xml
+start / end
+```
+
+少用：
+
+```xml
+left / right
+```
+
+原因是 `start / end` 更适合国际化布局，能兼容从右到左语言。
+
+---
+
+# 5. 基础示例：表单标签对齐
+
+## 5.1 错误写法
+
+```xml
+<TextView
+    android:id="@+id/tv_name"
+    android:text="姓名"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+<EditText
+    android:id="@+id/et_name"
+    app:layout_constraintStart_toEndOf="@id/tv_name"
+    app:layout_constraintTop_toTopOf="@id/tv_name" />
+```
+
+问题：
+
+> 输入框只跟着 `tv_name`，如果其他标签更长，输入框不会统一对齐。
+
+---
+
+## 5.2 正确写法：使用 Barrier
+
+```xml
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="姓名"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="身份证号码"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_name"
+        android:layout_marginTop="16dp" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_label_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="tv_name,tv_card" />
+
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="请输入姓名"
+        app:layout_constraintStart_toEndOf="@id/barrier_label_end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_name"
+        android:layout_marginStart="12dp" />
+
+    <EditText
+        android:id="@+id/et_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="请输入身份证号码"
+        app:layout_constraintStart_toEndOf="@id/barrier_label_end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_card"
+        android:layout_marginStart="12dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+---
+
+## 5.3 效果说明
+
+```text
+姓名          [请输入姓名          ]
+身份证号码    [请输入身份证号码      ]
+```
+
+`Barrier` 会自动取：
+
+```text
+max(tv_name.end, tv_card.end)
+```
+
+也就是两个标签里最靠右的那个边界。
+
+所以两个输入框可以统一从同一位置开始。
+
+---
+
+# 6. Barrier 和 Guideline 的区别
+
+| 对比项       | Guideline   | Barrier          |
+| --------- | ----------- | ---------------- |
+| 本质        | 固定参考线       | 动态参考线            |
+| 位置来源      | 固定 dp / 百分比 | 由多个 View 的实际边界决定 |
+| 是否受内容长度影响 | 不受影响        | 受影响              |
+| 常见用途      | 页面比例布局      | 动态内容对齐           |
+| 是否显示      | 不显示         | 不显示              |
+
+---
+
+## 关键区别
+
+### Guideline
+
+```text
+线在哪里，由你指定。
+```
+
+例如：
+
+```xml
+app:layout_constraintGuide_percent="0.3"
+```
+
+---
+
+### Barrier
+
+```text
+线在哪里，由内容决定。
+```
+
+例如：
+
+```xml
+app:constraint_referenced_ids="tv_name,tv_card"
+```
+
+---
+
+# 7. Barrier 和普通约束的区别
+
+| 对比项  | 普通约束       | Barrier        |
+| ---- | ---------- | -------------- |
+| 参考对象 | 单个 View    | 多个 View        |
+| 是否动态 | 取决于单个 View | 根据多个 View 动态变化 |
+| 适合场景 | 简单相邻布局     | 多个动态内容对齐       |
+
+---
+
+# 8. Barrier 的常见使用场景
+
+## 8.1 表单标签 + 输入框
+
+```text
+用户名        [输入框]
+手机号        [输入框]
+身份证号码     [输入框]
+```
+
+标签长度不一致时，用 Barrier 统一输入框起点。
+
+---
+
+## 8.2 图片 + 文本区域
+
+```text
+[图片]  标题
+       描述内容
+       按钮
+```
+
+如果图片宽度动态变化，可以用 Barrier 让右侧内容统一避开图片。
+
+---
+
+## 8.3 多个动态文本后面的按钮
+
+```text
+短文本       [按钮]
+很长很长文本  [按钮]
+```
+
+按钮统一约束到文本组的 Barrier 后面。
+
+---
+
+## 8.4 多语言适配
+
+中文：
+
+```text
+姓名
+身份证号码
+```
+
+英文：
+
+```text
+Name
+Identification Number
+```
+
+不同语言文本长度变化大，Barrier 比固定 margin 更稳。
+
+---
+
+# 9. Barrier 与 `gone` View
+
+Barrier 默认会考虑 `GONE` 的 View。
+
+如果不希望 Barrier 计算 `GONE` 的 View，可以设置：
+
+```xml
+app:barrierAllowsGoneWidgets="false"
+```
+
+示例：
+
+```xml
+<androidx.constraintlayout.widget.Barrier
+    android:id="@+id/barrier_label_end"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:barrierDirection="end"
+    app:constraint_referenced_ids="tv_name,tv_card"
+    app:barrierAllowsGoneWidgets="false" />
+```
+
+含义：
+
+> 如果 `tv_card` 被设置为 `gone`，Barrier 不再参考它的位置。
+
+---
+
+# 10. 注意事项
+
+## 10.1 Barrier 必须引用有效 View
+
+```xml
+app:constraint_referenced_ids="tv_name,tv_card"
+```
+
+这些 ID 必须存在，并且通常应该和 Barrier 在同一个 `ConstraintLayout` 内。
+
+---
+
+## 10.2 Barrier 不能单独显示
+
+Barrier 只是辅助线，不是 UI 控件。
+
+不要给它设置：
+
+```xml
+android:background
+android:text
+android:padding
+```
+
+这些没有意义。
+
+---
+
+## 10.3 避免循环依赖
+
+不要让：
+
+```text
+A 影响 Barrier
+Barrier 又反过来影响 A
+```
+
+错误思路：
+
+```text
+tv_name -> barrier
+tv_name 又约束到 barrier
+```
+
+这会造成约束关系混乱。
+
+正确思路：
+
+```text
+tv_name、tv_card -> barrier
+et_name、et_card -> barrier
+```
+
+也就是说：
+
+> 被 Barrier 参考的 View，不要再依赖这个 Barrier。
+
+---
+
+## 10.4 Barrier 适合动态边界，不适合固定比例
+
+如果你需要的是：
+
+```text
+距离父容器 30%
+```
+
+用 Guideline。
+
+如果你需要的是：
+
+```text
+避开一组动态内容的最大宽度
+```
+
+用 Barrier。
+
+---
+
+# 11. 和 CSS 的类比
+
+CSS 中没有和 Barrier 完全等价的原生能力。
+
+Barrier 类似于：
+
+```text
+max(label1.width, label2.width, label3.width)
+```
+
+然后让右侧内容从这个最大值之后开始。
+
+在 CSS 里通常要用：
+
+* Grid
+* flex
+* table layout
+* JS 测量宽度
+
+才能实现类似效果。
+
+---
+
+# 12. 总结
+
+`Barrier` 是 ConstraintLayout 的动态辅助定位线。
+
+它的核心作用是：
+
+> 根据一组 View 的实际边界，动态生成参考线，让其他 View 对齐到这条线。
+
+一句话记忆：
+
+```text
+Guideline 是固定参考线。
+Barrier 是动态参考线。
+```
+
+常见场景：
+
+```text
+多个文本长度不一致，但后面的控件需要统一对齐。
+```
+
+推荐写法：
+
+```xml
+<androidx.constraintlayout.widget.Barrier
+    android:id="@+id/barrier_label_end"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:barrierDirection="end"
+    app:constraint_referenced_ids="tv_name,tv_card" />
+```

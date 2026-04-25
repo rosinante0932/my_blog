@@ -1,0 +1,359 @@
+---
+sidebar_position: 12
+id: android-12
+title: GuideLine
+---
+# 约束布局的辅助定位：Guideline
+
+## 1. Guideline 是什么
+
+`Guideline` 是 `ConstraintLayout` 提供的**辅助定位线**。
+
+它本身：
+
+* 不显示在页面上
+* 不占实际 UI 空间
+* 只用于给其他 View 提供约束参考
+
+可以理解为：
+
+> Guideline 是 ConstraintLayout 里的“参考线”。
+
+类似 CSS / 设计工具里的：
+
+```text
+辅助线 / 栅格线 / 参考线
+```
+
+---
+
+## 2. 为什么需要 Guideline
+
+如果不用 Guideline，你可能会这样写：
+
+```xml
+android:layout_marginStart="100dp"
+```
+
+这种写法的问题是：
+
+* 写死距离
+* 不适配不同屏幕
+* 横竖屏容易变形
+* 大屏 / 小屏表现不一致
+
+而 Guideline 可以用百分比定位：
+
+```xml
+app:layout_constraintGuide_percent="0.3"
+```
+
+表示：
+
+> 这条参考线位于父容器宽度的 30% 位置。
+
+这样就能做更稳定的响应式布局。
+
+---
+
+# 3. Guideline 的方向
+
+Guideline 有两种方向：
+
+| 方向           | 作用             |
+| ------------ | -------------- |
+| `vertical`   | 垂直参考线，用来控制横向位置 |
+| `horizontal` | 水平参考线，用来控制纵向位置 |
+
+注意这个地方容易误解：
+
+```xml
+android:orientation="vertical"
+```
+
+表示这是一条**竖线**，它控制的是左右方向的位置。
+
+```xml
+android:orientation="horizontal"
+```
+
+表示这是一条**横线**，它控制的是上下方向的位置。
+
+---
+
+# 4. 垂直 Guideline 示例
+
+```xml
+<androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.3" />
+```
+
+含义：
+
+> 在父容器宽度 30% 的位置放一条垂直参考线。
+
+然后其他 View 可以约束到它：
+
+```xml
+<TextView
+    android:id="@+id/tv_title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="标题"
+    app:layout_constraintStart_toStartOf="@id/guideline_vertical"
+    app:layout_constraintTop_toTopOf="parent" />
+```
+
+含义：
+
+> `tv_title` 的左边对齐到这条 30% 的垂直参考线。
+
+---
+
+# 5. 水平 Guideline 示例
+
+```xml
+<androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintGuide_percent="0.4" />
+```
+
+含义：
+
+> 在父容器高度 40% 的位置放一条水平参考线。
+
+使用方式：
+
+```xml
+<TextView
+    android:id="@+id/tv_content"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="内容"
+    app:layout_constraintTop_toTopOf="@id/guideline_horizontal"
+    app:layout_constraintStart_toStartOf="parent" />
+```
+
+含义：
+
+> `tv_content` 的顶部对齐到父容器高度 40% 的位置。
+
+---
+
+# 6. Guideline 的三种定位方式
+
+Guideline 有三种常用定位方式。
+
+## 6.1 固定距离：距离开始位置
+
+```xml
+app:layout_constraintGuide_begin="100dp"
+```
+
+含义：
+
+> 距离父容器开始位置 100dp。
+
+垂直 Guideline：
+
+```xml
+android:orientation="vertical"
+app:layout_constraintGuide_begin="100dp"
+```
+
+表示：
+
+> 距离左侧 / start 位置 100dp。
+
+水平 Guideline：
+
+```xml
+android:orientation="horizontal"
+app:layout_constraintGuide_begin="100dp"
+```
+
+表示：
+
+> 距离顶部 100dp。
+
+---
+
+## 6.2 固定距离：距离结束位置
+
+```xml
+app:layout_constraintGuide_end="100dp"
+```
+
+含义：
+
+> 距离父容器结束位置 100dp。
+
+垂直 Guideline：
+
+```xml
+android:orientation="vertical"
+app:layout_constraintGuide_end="100dp"
+```
+
+表示：
+
+> 距离右侧 / end 位置 100dp。
+
+水平 Guideline：
+
+```xml
+android:orientation="horizontal"
+app:layout_constraintGuide_end="100dp"
+```
+
+表示：
+
+> 距离底部 100dp。
+
+---
+
+## 6.3 百分比定位
+
+```xml
+app:layout_constraintGuide_percent="0.3"
+```
+
+含义：
+
+> 位于父容器 30% 的位置。
+
+这是 Guideline 最常用、最推荐的方式。
+
+---
+
+# 7. 完整示例
+
+```xml
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 垂直参考线：位于父容器宽度 30% 的位置 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical_30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3" />
+
+    <!-- 水平参考线：位于父容器高度 40% 的位置 -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4" />
+
+    <TextView
+        android:id="@+id/tv_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/red"
+        android:padding="10dp"
+        android:text="Guideline 定位"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@id/guideline_vertical_30"
+        app:layout_constraintTop_toTopOf="@id/guideline_horizontal_40" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+
+效果：
+
+```text
+tv_box 的左边在父容器宽度 30% 的位置
+tv_box 的顶部在父容器高度 40% 的位置
+```
+
+---
+
+# 8. Guideline 和 margin 的区别
+
+| 对比项       | margin     | Guideline    |
+| --------- | ---------- | ------------ |
+| 本质        | View 自身外边距 | 独立参考线        |
+| 是否可复用     | 不方便        | 可以多个 View 共用 |
+| 是否适合百分比布局 | 不适合        | 适合           |
+| 是否适合响应式   | 一般         | 更适合          |
+| 是否显示      | 不显示        | 不显示          |
+
+---
+
+# 9. Guideline 和 CSS 的类比
+
+Guideline 更接近 CSS Grid 里的网格线：
+
+```css
+grid-template-columns: 30% 70%;
+```
+
+或者设计工具中的参考线。
+
+它不等于 CSS 的 `position: relative`。
+
+更准确的理解是：
+
+```text
+Guideline ≈ Grid Line / 辅助参考线
+```
+
+---
+
+# 10. 使用建议
+
+推荐使用 Guideline 的场景：
+
+* 页面左右分栏
+* 表单统一左边距
+* 多个控件对齐到同一比例位置
+* 大屏 / 小屏适配
+* 不想写死 margin 的布局
+* 需要百分比定位的布局
+
+不建议滥用 Guideline：
+
+* 简单的上下左右贴边布局
+* 两个 View 之间简单相邻
+* 可以用 chain 解决的等分布局
+* 可以用 barrier 解决的动态内容边界
+
+---
+
+# 11. 总结
+
+Guideline 是 ConstraintLayout 中的辅助定位工具。
+
+它的核心价值是：
+
+> 创建一条不可见的参考线，让其他 View 约束到这条线上。
+
+常见写法：
+
+```xml
+app:layout_constraintGuide_percent="0.3"
+```
+
+表示：
+
+> 在父容器 30% 的位置创建参考线。
+
+一句话总结：
+
+```text
+Guideline 用来做稳定、可复用、响应式的参考位置。
+```
