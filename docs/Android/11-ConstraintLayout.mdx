@@ -1,0 +1,647 @@
+---
+sidebar_position: 11
+id: android-11
+title: ConstraintLayout
+---
+
+```Java
+package com.example.testjava1;
+
+import android.os.Bundle;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ConstLayout extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_const_layout);
+
+        View tv_5_id = findViewById(R.id.tv_5);
+
+        tv_5_id.setOnClickListener(v->{
+            View tv_12_id = findViewById(R.id.tv_12);
+            if(tv_12_id.getVisibility() == View.GONE){
+                tv_12_id.setVisibility(View.VISIBLE);
+                return;
+            }
+            tv_12_id.setVisibility(View.GONE);
+//            tv_12_id.setVisibility(View.GONE);
+        });
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root"
+    >
+    <TextView
+        android:id="@+id/tv_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:text="测试测试测试"
+        app:layout_constraintTop_toTopOf="@id/root"
+        app:layout_constraintRight_toRightOf="@id/root"
+    />
+
+    <TextView
+        android:id="@+id/tv_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView1"
+        tools:text="测试测试测试1"
+        app:layout_constraintTop_toTopOf="@id/root"
+        app:layout_constraintLeft_toLeftOf="@id/root"
+    />
+
+    <TextView
+        android:id="@+id/tv_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView2"
+        tools:text="测试测试测试2"
+        app:layout_constraintBottom_toBottomOf="@id/root"
+        app:layout_constraintLeft_toLeftOf="@id/root"
+    />
+
+    <TextView
+        android:id="@+id/tv_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView4"
+        tools:text="测试测试测试4"
+        app:layout_constraintBottom_toBottomOf="@id/root"
+        app:layout_constraintRight_toRightOf="@id/root"
+    />
+
+    <TextView
+        android:id="@+id/tv_5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView5"
+        tools:text="测试测试测试5"
+        app:layout_constraintTop_toTopOf="@id/root"
+        app:layout_constraintBottom_toBottomOf="@id/root"
+        app:layout_constraintLeft_toLeftOf="@id/root"
+        app:layout_constraintRight_toRightOf="@id/root"
+    />
+
+    <TextView
+        android:id="@+id/tv_6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView6"
+        tools:text="测试测试测试6"
+        app:layout_constraintRight_toLeftOf="@id/tv_5"
+        app:layout_constraintTop_toBottomOf="@id/tv_5"
+        />
+
+    <TextView
+        android:id="@+id/tv_7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView7"
+        tools:text="测试测试测试7"
+        app:layout_constraintLeft_toRightOf="@id/tv_5"
+        app:layout_constraintTop_toBottomOf="@id/tv_5"
+        />
+
+
+    <TextView
+        android:id="@+id/tv_8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView8"
+        tools:text="测试测试测试8"
+        app:layout_constraintRight_toLeftOf="@id/tv_5"
+        app:layout_constraintBottom_toTopOf="@id/tv_5"
+        />
+
+    <TextView
+        android:id="@+id/tv_9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView9"
+        tools:text="测试测试测试9"
+        app:layout_constraintLeft_toRightOf="@id/tv_5"
+        app:layout_constraintBottom_toTopOf="@id/tv_5"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+这份你要写成文档，可以直接用下面这个结构。我会帮你压到**工程级理解，而不是表面类比**。
+
+---
+
+# ConstraintLayout vs JS/CSS `position: relative`
+
+（基于你的实际布局 ）
+
+---
+
+## 1. 先纠正一个常见误解
+
+很多人看到：
+
+> Constraint / Relative
+
+就会联想到：
+
+```css
+position: relative;
+```
+
+这是错的。
+
+---
+
+## 2. 本质差异（核心结论）
+
+### Android ConstraintLayout
+
+> **通过约束关系计算位置（解方程）**
+
+---
+
+### CSS `position: relative`
+
+> **在原位置基础上做偏移（视觉移动）**
+
+---
+
+## 3. 用你的代码做解释（关键）
+
+### ① 绝对定位类行为（四角）
+
+```xml
+app:layout_constraintTop_toTopOf="parent"
+app:layout_constraintRight_toRightOf="parent"
+```
+
+👉 `tv_1` 在右上角
+
+这更像：
+
+```css
+position: absolute;
+top: 0;
+right: 0;
+```
+
+---
+
+### ② 居中（双向约束）
+
+```xml
+app:layout_constraintTop_toTopOf="parent"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+```
+
+👉 `tv_5` 居中
+
+对应 CSS：
+
+```css
+display: flex;
+justify-content: center;
+align-items: center;
+```
+
+👉 注意：不是 relative，而是 **约束 + 平衡**
+
+---
+
+### ③ 相对其他 View（真正“相对”）
+
+```xml
+app:layout_constraintRight_toLeftOf="@id/tv_5"
+app:layout_constraintTop_toBottomOf="@id/tv_5"
+```
+
+👉 `tv_6` 在 `tv_5` 左下角
+
+这更像：
+
+```css
+position: absolute;
+left: calc(tv_5.left - width);
+top: calc(tv_5.bottom);
+```
+
+👉 这是“相对别人”，不是“相对自己”
+
+---
+
+### ④ baseline 对齐（CSS 做不到的）
+
+```xml
+app:layout_constraintBaseline_toBaselineOf="@id/tv_5"
+```
+
+👉 `tv_10` 文本基线对齐
+
+CSS 只能：
+
+```css
+vertical-align: baseline;
+```
+
+但只能 inline 场景，远不如 ConstraintLayout 精确。
+
+---
+
+### ⑤ 圆形约束（CSS 基本没有）
+
+```xml
+app:layout_constraintCircle="@id/tv_5"
+app:layout_constraintCircleRadius="150dp"
+app:layout_constraintCircleAngle="0"
+```
+
+👉 `tv_11` 绕 `tv_5` 画圆
+
+CSS 要写：
+
+```css
+transform: rotate + translate
+```
+
+👉 完全不是一个层级的能力
+
+---
+
+### ⑥ 百分比偏移（bias）
+
+```xml
+app:layout_constraintHorizontal_bias="0.1"
+app:layout_constraintVertical_bias="0.1"
+```
+
+👉 `tv_12` 在父容器 10% 位置
+
+等价：
+
+```css
+left: 10%;
+top: 10%;
+```
+
+但注意：
+
+👉 这是在 **两个约束之间的插值**
+
+---
+
+### ⑦ goneMargin（CSS 完全没有）
+
+```xml
+app:layout_goneMarginStart="100dp"
+```
+
+👉 `tv_12` 消失时，`tv_13` 自动补位
+
+CSS：
+
+❌ 没有这种机制
+只能 JS 手动改
+
+---
+
+## 4. 和 CSS 的真正对应关系
+
+你要写文档，必须给正确映射：
+
+| Android           | CSS 类比                     |
+| ----------------- | -------------------------- |
+| ConstraintLayout  | flex + grid + absolute 混合体 |
+| constraint        | 布局规则（不是偏移）                 |
+| bias              | 百分比定位                      |
+| baseline          | 高级排版                       |
+| circle constraint | transform 计算               |
+| goneMargin        | ❌ 无                        |
+
+---
+
+## 5. 最关键的本质区别（必须写）
+
+### CSS relative：
+
+```css
+position: relative;
+top: 10px;
+```
+
+特点：
+
+* 不影响其他元素布局
+* 原位置还占着
+* 只是“视觉偏移”
+
+---
+
+### ConstraintLayout：
+
+```xml
+app:layout_constraintTop_toTopOf="parent"
+```
+
+特点：
+
+* **参与整体布局计算**
+* 会影响所有 View 位置
+* 是“布局规则”，不是“偏移”
+
+---
+
+## 6. 一句话总结（可以直接写文档）
+
+> ConstraintLayout 的“相对”是 View 与 View 之间的约束关系，用于参与布局计算；
+> CSS 的 `position: relative` 是元素相对于自身原位置的偏移，不参与布局规则计算。
+
+---
+
+## 7. 我给你的一个更狠的结论（你要记住）
+
+如果你把：
+
+* ConstraintLayout 当 relative
+* 那你布局一定会写崩
+
+正确理解是：
+
+> ConstraintLayout ≈ “声明式坐标系统 + 约束求解器”
+
+---
+
+## 8. 如果你要再进一层（建议你做）
+
+你现在已经接近这个层级了，可以继续：
+
+* chain（权重布局）≈ flex-grow
+* guideline ≈ grid line
+* barrier ≈ 动态边界
+
+---
+
+
+你问这个问题，说明你已经开始接近 **ConstraintLayout 的核心设计哲学** 了，但你现在的理解还停在“用法”，没到“为什么”。
+
+我直接把话说透：
+
+---
+
+# 结论（先给你结论）
+
+> 在 **ConstraintLayout 里，不推荐使用 `match_parent`，因为它会绕开约束系统。**
+
+官方不是“不能用”，而是：
+
+👉 **用它，你就等于放弃了 ConstraintLayout 的优势**
+
+---
+
+# 1. 为什么不推荐 `match_parent`
+
+## 你现在这段代码
+
+```xml
+android:layout_width="0dp"
+android:layout_height="0dp"
+
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintTop_toTopOf="parent"
+app:layout_constraintBottom_toBottomOf="parent"
+```
+
+👉 这其实就是：
+
+```xml
+match_parent
+```
+
+但它的本质完全不一样。
+
+---
+
+## 关键区别
+
+### ❌ match_parent
+
+```xml
+android:layout_width="match_parent"
+```
+
+含义：
+
+> 直接填满父容器
+
+👉 **不参与约束计算**
+
+---
+
+### ✅ 0dp（match constraints）
+
+```xml
+android:layout_width="0dp"
+```
+
+含义：
+
+> 宽度由约束决定
+
+👉 **参与约束系统计算**
+
+---
+
+# 2. ConstraintLayout 的核心设计
+
+ConstraintLayout 是一个：
+
+> **约束求解系统（Constraint Solver）**
+
+不是简单布局。
+
+---
+
+## 如果你用 match_parent
+
+你是在说：
+
+> “别算了，直接给我全宽”
+
+👉 这会导致：
+
+* 无法参与链（chain）
+* 无法参与 bias（百分比）
+* 无法做复杂约束
+* 性能优化失效（因为跳过 solver）
+
+---
+
+## 如果你用 0dp
+
+你是在说：
+
+> “我的尺寸由约束推导出来”
+
+👉 这才是 ConstraintLayout 的正确玩法
+
+---
+
+# 3. 为什么官方推荐 0dp
+
+因为它支持：
+
+---
+
+### ✅ 1. 权重布局（类似 flex-grow）
+
+```xml
+app:layout_constraintHorizontal_weight="1"
+```
+
+👉 只有 0dp 才生效
+
+---
+
+### ✅ 2. 百分比布局（你前面用的）
+
+```xml
+app:layout_constraintHorizontal_bias="0.1"
+```
+
+👉 必须是约束参与计算
+
+---
+
+### ✅ 3. Chain（链式布局）
+
+```xml
+app:layout_constraintHorizontal_chainStyle="spread"
+```
+
+👉 match_parent 直接废掉 chain
+
+---
+
+### ✅ 4. 自适应尺寸
+
+ConstraintLayout 可以根据内容 + 约束推导尺寸
+
+👉 match_parent 直接锁死
+
+---
+
+# 4. 你这段代码在干什么（深入解释）
+
+你现在写的是：
+
+```xml
+width = 0dp
+height = 0dp
+四边约束 parent
+```
+
+👉 实际效果：
+
+> View 填满父容器（等价 match_parent）
+
+但：
+
+👉 **它仍然在约束系统里**
+
+---
+
+# 5. 真正的差别（这是重点）
+
+| 行为         | match_parent | 0dp + constraint |
+| ---------- | ------------ | ---------------- |
+| 是否参与约束系统   | ❌ 否          | ✅ 是              |
+| 是否支持 chain | ❌            | ✅                |
+| 是否支持权重     | ❌            | ✅                |
+| 是否支持 bias  | ❌            | ✅                |
+| 可扩展性       | 低            | 高                |
+| 推荐程度       | ❌ 不推荐        | ✅ 推荐             |
+
+---
+
+# 6. 什么时候可以用 match_parent
+
+别走极端，不是完全不能用。
+
+👉 只在这两种情况：
+
+### ✔ 简单页面（非复杂布局）
+
+### ✔ 不需要参与约束计算
+
+比如：
+
+```xml
+RecyclerView
+ScrollView
+根布局
+```
+
+---
+
+# 7. 你这个例子本质在做什么
+
+```xml
+tv_a
+width=0dp + 四边约束
+```
+
+👉 你其实在做：
+
+> 一个“全屏占位 + 可参与约束的 View”
+
+如果后面你加：
+
+```xml
+bias
+chain
+weight
+```
+
+👉 match_parent 会直接崩
+
+---
+
+# 8. 一句话写进文档
+
+> 在 ConstraintLayout 中，推荐使用 `0dp（match constraints）` 代替 `match_parent`，因为前者会参与约束计算系统，而后者会绕过约束求解机制，限制布局能力。
+
+---
+
+# 9. 我给你一个更狠的判断标准
+
+以后你看到：
+
+```xml
+ConstraintLayout + match_parent
+```
+
+你脑子里要自动反应：
+
+> ⚠️ 这个布局很可能写错了，或者写得很初级
+
+---
+
+如果你下一步想继续深入：
+
+👉 我可以把 **ConstraintLayout = Flex + Grid + Absolute 的完整映射体系** 给你整理出来（包含 chain、weight、barrier、guideline）
+
+那个才是真正“架构级理解”，而不是 API 级。

@@ -1,0 +1,307 @@
+---
+sidebar_position: 10
+id: android-10
+title: RelativeLayout
+---
+
+```Java
+package com.example.testjava1;
+
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.navigation.ui.AppBarConfiguration;
+
+import com.example.testjava1.databinding.ActivityRlayoutBinding;
+
+public class RLayout extends AppCompatActivity {
+
+    private AppBarConfiguration appBarConfiguration;
+    private ActivityRlayoutBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_rlayout);
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".RLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    >
+    <TextView
+        android:text="跳过"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        android:src="@drawable/ic_launcher_foreground"
+    />
+
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_logo"
+        android:text="用户名:"
+        android:inputType="textPersonName"
+    />
+
+    <EditText
+        android:id="@+id/et_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_username"
+        android:hint="请输入用户名"
+        android:inputType="textPersonName"
+    />
+
+    <TextView
+        android:id="@+id/tv_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/et_username"
+        android:layout_marginTop="8dp"
+        android:text="密码:"
+        android:inputType="textVisiblePassword"
+    />
+
+    <EditText
+        android:id="@+id/ev_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_password"
+        android:hint="请输入密码"
+        android:inputType="textPersonName"
+    />
+
+    <Button
+        android:id="@+id/btn_sign"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ev_password"
+        android:layout_marginTop="8dp"
+        android:text="登录"
+    />
+
+    <TextView
+        android:id="@+id/tv_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_sign"
+        android:layout_marginTop="36dp"
+        android:text="其他登录方式"
+    />
+
+    <ImageView
+        android:id="@+id/iv_wechat"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignBottom="@+id/iv_weibo"
+        android:src="@drawable/ic_launcher_foreground"
+    />
+
+    <ImageView
+        android:id="@+id/iv_weibo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/tv_other"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_launcher_foreground"
+    />
+
+    <ImageView
+        android:id="@+id/iv_qq"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignBottom="@+id/iv_weibo"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_launcher_foreground"
+    />
+</RelativeLayout>
+```
+
+## Android `RelativeLayout` 和 JS/CSS `position: relative` 的区别
+
+### 1. 核心区别
+
+Android 的 `RelativeLayout` 是一个**父布局容器**，它的作用是让子 View 之间通过相对规则进行排列。
+
+而 JS/CSS 里的 `position: relative` 是一个**元素自身的定位方式**，表示这个元素仍然占据原来的文档流位置，但可以通过 `top / right / bottom / left` 做视觉偏移。
+
+一句话：
+
+> `RelativeLayout` 是“子元素之间怎么摆”；
+> CSS `position: relative` 是“当前元素在原位置基础上怎么偏”。
+
+---
+
+## 2. 对比表
+
+| 对比点       | Android `RelativeLayout`                                         | CSS `position: relative`      |
+| --------- | ---------------------------------------------------------------- | ----------------------------- |
+| 本质        | 布局容器                                                             | 元素定位属性                        |
+| 控制对象      | 控制子 View 的位置                                                     | 控制当前元素自身的位置                   |
+| 是否影响兄弟元素  | 会影响整体布局规则                                                        | 视觉偏移不影响其他元素占位                 |
+| 参考对象      | 父容器、兄弟 View                                                      | 自己原本的位置                       |
+| 常见属性      | `layout_below`、`layout_alignParentEnd`、`layout_centerHorizontal` | `top`、`left`、`right`、`bottom` |
+| 是否需要父容器   | 本身就是父容器                                                          | 不需要特定父容器                      |
+| 更像 CSS 的谁 | 更像 `position: absolute` + 父容器约束                                  | 就是相对自身偏移                      |
+
+---
+
+## 3. Android 示例解释
+
+```xml
+<TextView
+    android:id="@+id/tv_username"
+    android:layout_below="@+id/iv_logo"
+    android:text="用户名:" />
+```
+
+意思是：
+
+> `tv_username` 放在 `iv_logo` 的下面。
+
+这不是相对自己偏移，而是**相对另一个 View 定位**。
+
+---
+
+```xml
+<ImageView
+    android:id="@+id/iv_logo"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="30dp" />
+```
+
+意思是：
+
+> `iv_logo` 在父容器中水平居中，并且距离顶部 30dp。
+
+这里参考的是**父容器 RelativeLayout**。
+
+---
+
+## 4. CSS `relative` 示例
+
+```css
+.box {
+  position: relative;
+  top: 30px;
+  left: 20px;
+}
+```
+
+意思是：
+
+> `.box` 先按照正常文档流排版，然后从原来的位置向下移动 30px，向右移动 20px。
+
+注意：它原来的位置仍然被占着，其他元素不会自动填补这个空位。
+
+---
+
+## 5. 更准确的类比
+
+Android：
+
+```xml
+android:layout_below="@id/iv_logo"
+android:layout_alignParentEnd="true"
+android:layout_centerHorizontal="true"
+```
+
+更像 CSS 里的：
+
+```css
+position: absolute;
+top: ...;
+right: ...;
+left: ...;
+```
+
+但 Android 是通过规则描述位置，不是直接写坐标。
+
+---
+
+## 6. 你这份 XML 里的问题
+
+### 问题 1：`TextView` 不应该写 `inputType`
+
+```xml
+<TextView
+    android:inputType="textPersonName" />
+```
+
+`inputType` 是给 `EditText` 用的，`TextView` 只是展示文本，不负责输入。
+
+应删除。
+
+---
+
+### 问题 2：密码输入框写错了
+
+你现在写的是：
+
+```xml
+android:inputType="textPersonName"
+```
+
+应该改成：
+
+```xml
+android:inputType="textPassword"
+```
+
+---
+
+### 问题 3：`layout_alignParentRight` 已过时
+
+你同时写了：
+
+```xml
+android:layout_alignParentEnd="true"
+android:layout_alignParentRight="true"
+```
+
+现在优先用：
+
+```xml
+android:layout_alignParentEnd="true"
+```
+
+`Right` 是旧写法，不利于适配阿拉伯语这类从右往左的语言。
+
+---
+
+## 7. 总结
+
+`RelativeLayout` 的“relative”不是 CSS 里的 `position: relative`。
+
+它的意思是：
+
+> 子 View 可以相对于父容器或其他兄弟 View 进行布局。
+
+而 CSS 的 `relative` 是：
+
+> 元素相对于自己原来的位置进行偏移。
+
+所以两者名字相似，但设计思想完全不同。Android 的 `RelativeLayout` 更像一个“规则定位系统”，CSS 的 `relative` 更像“自身微调位置”。
